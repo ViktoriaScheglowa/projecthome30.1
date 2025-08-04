@@ -1,0 +1,20 @@
+[project]
+name = "projecthome30-1"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Viktory",email = "mokshan.os@mail.ru"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "django (>=5.2.4,<6.0.0)"
+]
+
+[tool.poetry]
+packages = [{include = "projecthome30"}]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
