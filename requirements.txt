@@ -5,6 +5,7 @@ Django==5.2.4
 djangorestframework==3.16.0
 dotenv==0.9.9
 et_xmlfile==2.0.0
+generics==7.0.0
 idna==3.10
 numpy==2.3.2
 openpyxl==3.1.5
