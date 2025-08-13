@@ -40,7 +40,7 @@ class UserDestroyAPIView(DestroyAPIView):
     queryset = User.objects.all()
 
 
-class PayViewSet(ModelViewSet):
+class PayViewSet(ListAPIView):
     queryset = Pay.objects.all()
     serializer_class = PaySerializer
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]

@@ -1,5 +1,4 @@
 from django.urls import path
-from rest_framework.routers import SimpleRouter
 from user.apps import UserConfig
 
 from .views import (UserCreateAPIView, UserDestroyAPIView, UserListAPIView,
@@ -7,13 +6,12 @@ from .views import (UserCreateAPIView, UserDestroyAPIView, UserListAPIView,
 
 app_name = UserConfig.name
 
-router = SimpleRouter()
-router.register(r"pay", PayViewSet, basename="pay")
 
-urlpatterns = [
+urlpatterns = ([
     path("", UserListAPIView.as_view(), name="user-list"),
     path("create/", UserCreateAPIView.as_view(), name="user-create"),
     path("<int:pk>/", UserRetrieveAPIView.as_view(), name="user-detail"),
     path("<int:pk>/update/", UserUpdateAPIView.as_view(), name="user-update"),
     path("<int:pk>/delete/", UserDestroyAPIView.as_view(), name="user-delete"),
-] + router.urls
+    path("pay/", PayViewSet.as_view(), name="pay"),
+])
