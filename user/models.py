@@ -1,7 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from training.models import Course, Lesson
+from training.models import Lesson, Course
 
 
 class User(AbstractUser):
@@ -99,3 +99,11 @@ class Pay(models.Model):
         verbose_name='Способ оплаты',
         help_text='Выберите способ оплаты'
     )
+
+    def __str__(self):
+        return f'{self.user}-{self.course}-{self.lesson}'
+
+    class Meta:
+        verbose_name = 'Платеж'
+        verbose_name_plural = 'Платежи'
+        ordering = ('-amount',)

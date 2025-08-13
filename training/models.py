@@ -1,22 +1,18 @@
 from django.db import models
 
-from django.contrib.auth import get_user_model
-
-User = get_user_model()
-
 
 class Course(models.Model):
     title = models.CharField(
         max_length=200,
         verbose_name='Название')
     preview = models.ImageField(
-        upload_to="training/preview",
+        upload_to="media/preview",
         verbose_name="Изображение",
         help_text="Загрузите изображение курса", )
     description = models.TextField(
         blank=True,
         verbose_name='Описание')
-    owner = models.ForeignKey(User,
+    owner = models.ForeignKey("user.User",
                               on_delete=models.SET_NULL,
                               null=True,
                               blank=True,
@@ -44,7 +40,7 @@ class Lesson(models.Model):
         blank=True,
         verbose_name='Описание')
     preview = models.ImageField(
-        upload_to='photos/',
+        upload_to='media/photos',
         blank=True,
         null=True,
         verbose_name='Изображение')
@@ -57,7 +53,7 @@ class Lesson(models.Model):
     course = models.ForeignKey(Course,
                                on_delete=models.CASCADE,
                                related_name='lessons')
-    owner = models.ForeignKey(User,
+    owner = models.ForeignKey("user.User",
                               verbose_name='Владелец',
                               help_text='Укажите владельца',
                               blank=True,
@@ -70,3 +66,4 @@ class Lesson(models.Model):
     class Meta:
         verbose_name = "Урок"
         verbose_name_plural = "Уроки"
+
