@@ -2,6 +2,7 @@ import generics
 from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
+from rest_framework.permissions import IsAuthenticated
 
 from training.models import Course, Lesson
 from training.serializers import CourseSerializer, LessonSerializer
@@ -30,6 +31,7 @@ class CourseViewSet(viewsets.ModelViewSet):
 class LessonCreateAPIView(CreateAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
+    permission_classes = (~IsModer, IsAuthenticated)
 
     def perform_create(self, serializer):
         lesson = serializer.save
@@ -45,12 +47,15 @@ class LessonListAPIView(ListAPIView):
 class LessonRetrieveAPIView(RetrieveAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
+    permission_classes = (IsAuthenticated, IsModer | IsOwner,)
 
 
 class LessonUpdateAPIView(UpdateAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
+    permission_classes = (IsAuthenticated, IsModer | IsOwner,)
 
 
 class LessonDestroyAPIView(DestroyAPIView):
     queryset = Lesson.objects.all()
+    permission_classes = (IsAuthenticated, ~IsModer | IsOwner,)

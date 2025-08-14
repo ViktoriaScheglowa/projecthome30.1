@@ -22,5 +22,3 @@ class CourseSerializer(serializers.ModelSerializer):
         model = Course
         fields = ('name', 'preview', 'description', 'count_lessons', 'lessons')
 
-
-
