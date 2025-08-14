@@ -5,7 +5,7 @@ from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView,
 
 from training.models import Course, Lesson
 from training.serializers import CourseSerializer, LessonSerializer
-from user.permissions import IsModer
+from user.permissions import IsModer, IsOwner
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -16,9 +16,9 @@ class CourseViewSet(viewsets.ModelViewSet):
         if self.action in ['create', 'destroy']:
             self.permission_classes = (~IsModer,)
         elif self.action in ['update', 'retrieve']:
-            self.permission_classes = (IsModer,)
+            self.permission_classes = (IsModer | IsOwner,)
         elif self.action == 'destroy':
-            self.permission_classes = (~IsModer,)
+            self.permission_classes = (~IsModer | IsOwner,)
         return super().get_permissions()
 
     def perform_create(self, serializer):
