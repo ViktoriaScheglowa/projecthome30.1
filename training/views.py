@@ -24,9 +24,9 @@ class CourseViewSet(viewsets.ModelViewSet):
         if self.action in ['create']:
             self.permission_classes = (IsAuthenticated, ~IsModer,)
         elif self.action in ['update', 'retrieve']:
-            self.permission_classes = (IsModer | IsOwner,)
+            self.permission_classes = (IsAuthenticated, IsModer | IsOwner,)
         elif self.action == 'destroy':
-            self.permission_classes = (~IsModer | IsOwner,)
+            self.permission_classes = (IsAuthenticated, ~IsModer | IsOwner,)
         return super().get_permissions()
 
     def perform_create(self, serializer):
@@ -48,8 +48,11 @@ class LessonListAPIView(ListAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
 
-    def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if not self.request.user.groups(name='manager').exists():
+            qs = qs.filter(owner=self.request.user)
+        return qs
 
 
 class LessonRetrieveAPIView(RetrieveAPIView):
