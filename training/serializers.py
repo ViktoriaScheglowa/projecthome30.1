@@ -21,7 +21,7 @@ class SubscriptionSerializer(ModelSerializer):
 
 class CourseSerializer(serializers.ModelSerializer):
     count_lessons = SerializerMethodField()
-    lessons = LessonSerializer(many=True, source='lesson_set')
+    lessons = LessonSerializer(many=True)
     is_subscribed = SerializerMethodField()
 
     def get_count_lessons(self, course):
@@ -33,5 +33,5 @@ class CourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = ('title', 'preview', 'description', 'count_lessons', 'lessons')
+        fields = ('title', 'preview', 'description', 'count_lessons', 'lessons', 'is_subscribed')
         validators = [LinkVideoValidator(field="video")]

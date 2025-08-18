@@ -38,6 +38,7 @@ class Lesson(models.Model):
         verbose_name='Название')
     description = models.TextField(
         blank=True,
+        null=True,
         verbose_name='Описание')
     preview = models.ImageField(
         upload_to='media/photos',
@@ -77,7 +78,7 @@ class Subscription(models.Model):
     )
 
     def __str__(self):
-        return f"{self.user.email} подписан(а) на {self.course.name}"
+        return f"{self.user.email} подписан(а) на {self.course.title}"
 
     class Meta:
         verbose_name = "Подписка"
