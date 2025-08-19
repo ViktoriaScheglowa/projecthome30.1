@@ -8,6 +8,8 @@ class Course(models.Model):
     preview = models.ImageField(
         upload_to="media/preview",
         verbose_name="Изображение",
+        blank=True,
+        null=True,
         help_text="Загрузите изображение курса", )
     description = models.TextField(
         blank=True,
