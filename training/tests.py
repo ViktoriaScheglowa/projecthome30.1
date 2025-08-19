@@ -37,16 +37,19 @@ class CourseTestCase(APITestCase):
 
     def test_course_create(self):
         """Тестирование создания курса"""
-        data = {"title": "Веб-разработчик", "description": "Практический курс для тех, кто хочет создавать веб-проекты"}
+        data = {
+            "title": "Веб-разработчик",
+            "description": "Практический курс для тех, кто хочет создавать веб-проекты"
+        }
 
         url = reverse('courses-list')
-        response = self.client.post(url, data, format='json')
-        data_response = response.json()
+        response = self.client.patch(url, data)
+        data = response.json()
 
         # self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        # self.assertEqual(data_response.get("title"), data["title"])
+        # self.assertEqual(data.get("title"), self.course.title)
 
-        # self.assertEqual(data_response.get("owner"), self.user.id)
+        # self.assertEqual(response.json().get("owner"), self.user.id)
         self.assertTrue(Course.objects.all().count(), 2)
 
     def test_course_update(self):

@@ -55,7 +55,7 @@ class LessonListAPIView(ListAPIView):
 
     def get_queryset(self):
         qs = super().get_queryset()
-        if not self.request.user.groups(name='manager').exists():
+        if not self.request.user.groups.filter(name='manager').exists():
             qs = qs.filter(owner=self.request.user)
         return qs
 
