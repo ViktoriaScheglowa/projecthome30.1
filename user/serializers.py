@@ -20,3 +20,27 @@ class UserSerializers(ModelSerializer):
     def get_field_names(self, declared_fields, info):
         expanded_fields = super().get_field_names(declared_fields, info)
         return expanded_fields + self.Meta.extra_fields
+
+
+class UserPublicSerializer(ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ["email", "first_name", "city", "avatar"]
+        read_only_fields = fields
+
+
+class UserDetailSerializer(ModelSerializer):
+    payment = PaySerializer(many=True, source="user", read_only=True)
+
+    class Meta:
+        model = User
+        fields = [
+            "email",
+            "first_name",
+            "last_name",
+            "phone",
+            "city",
+            "avatar",
+            "payment",
+        ]

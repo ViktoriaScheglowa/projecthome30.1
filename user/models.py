@@ -99,9 +99,31 @@ class Pay(models.Model):
         verbose_name='Способ оплаты',
         help_text='Выберите способ оплаты'
     )
+    session_id = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        verbose_name="Id сессии",
+        help_text="Укажите id сессии",
+    )
+    link = models.URLField(
+        max_length=400,
+        null=True,
+        blank=True,
+        verbose_name="Ссылка на оплату",
+        help_text="Укажите ссылку на оплату",
+    )
+    payment_status = models.CharField(
+        max_length=20,
+        default="unpaid",
+        verbose_name="Статус оплаты",
+        help_text="Укажите статус оплаты",
+        null=True,
+        blank=True,
+    )
 
     def __str__(self):
-        return f'{self.user}-{self.course}-{self.lesson}'
+        return self.amount
 
     class Meta:
         verbose_name = 'Платеж'
