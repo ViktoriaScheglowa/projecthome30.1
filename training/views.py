@@ -20,6 +20,8 @@ class CourseViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         qs = super().get_queryset()
+        if getattr(self, 'swagger_fake_view', False):
+            return Course.objects.none()
         if not self.request.user.groups.filter(name='manager').exists():
             qs = qs.filter(owner=self.request.user)
         return qs
