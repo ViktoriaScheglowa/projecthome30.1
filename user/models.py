@@ -29,6 +29,8 @@ class User(AbstractUser):
         max_length=50,
         verbose_name='Страна',
         help_text='Введите страну проживания',
+        null=True,
+        blank=True
     )
     token = models.CharField(
         max_length=50,

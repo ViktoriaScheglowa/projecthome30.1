@@ -6,14 +6,15 @@ from requests import Response
 from rest_framework import filters
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
-from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView, \
+    ListCreateAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import ModelViewSet
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from user.models import User, Pay
-from user.serializers import UserSerializers, PaySerializer, UserPublicSerializer
+from user.serializers import UserSerializers, PaySerializer, UserPublicSerializer, UserRegisterSerializer
 from user.services import check_payment_status, create_stripe_sessions, convert_to_dollars, create_stripe_price
 
 
@@ -25,7 +26,7 @@ from user.services import check_payment_status, create_stripe_sessions, convert_
     ),
 )
 class UserCreateAPIView(CreateAPIView):
-    serializer_class = UserSerializers
+    serializer_class = UserRegisterSerializer
     queryset = User.objects.all()
     permission_classes = (AllowAny,)
 
@@ -69,7 +70,7 @@ class UserDestroyAPIView(DestroyAPIView):
     queryset = User.objects.all()
 
 
-class PayListView(ListAPIView):
+class PayListView(ListCreateAPIView):
     queryset = Pay.objects.all()
     serializer_class = PaySerializer
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
