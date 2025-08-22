@@ -34,7 +34,7 @@ urlpatterns = [
     path('training/', include('training.urls', namespace='training')),
     path('login/', CustomTokenObtainPairView.as_view(), name='login'),
     path('token/refresh/', CustomTokenObtainPairView.as_view(), name='token_refresh'),
-    path('register/', UserCreateAPIView.as_view(), name='register'),
+
 
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),

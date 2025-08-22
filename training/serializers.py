@@ -6,6 +6,12 @@ from training.models import Course, Lesson, Subscription
 from training.validators import LinkVideoValidator
 
 
+class CourseSerializer(ModelSerializer):
+    class Meta:
+        model = Course
+        fields = "__all__"
+
+
 class LessonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lesson
@@ -19,7 +25,7 @@ class SubscriptionSerializer(ModelSerializer):
         fields = "__all__"
 
 
-class CourseSerializer(serializers.ModelSerializer):
+class CourseDetailSerializer(serializers.ModelSerializer):
     count_lessons = SerializerMethodField()
     lessons = LessonSerializer(many=True)
     is_subscribed = SerializerMethodField()

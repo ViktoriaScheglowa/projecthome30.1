@@ -9,8 +9,14 @@ class PaySerializer(ModelSerializer):
         fields = "__all__"
 
 
+class UserRegisterSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = "__all__"
+
+
 class UserSerializers(ModelSerializer):
-    payment = PaySerializer(many=True, source='pay_set')
+    payment = PaySerializer(many=True, source='pay_set', read_only=True)
 
     class Meta:
         model = User
@@ -26,7 +32,7 @@ class UserPublicSerializer(ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["email", "first_name", "city", "avatar"]
+        fields = ["email", "first_name", "country", "avatar"]
         read_only_fields = fields
 
 
