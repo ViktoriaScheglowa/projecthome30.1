@@ -24,6 +24,12 @@ class Course(models.Model):
         auto_now=True,
         verbose_name='Дата обновления курса'
     )
+    notification_task_id = models.CharField(
+        max_length=250,
+        null=True,
+        blank=True,
+        verbose_name='id задачи уведомления'
+    )
 
     def __str__(self):
         return self.title
@@ -62,6 +68,10 @@ class Lesson(models.Model):
                               blank=True,
                               null=True,
                               on_delete=models.SET_NULL)
+    update_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name='Дата обновления урока'
+    )
 
     def __str__(self):
         return f"Курс: {self.course}" f"Урок: {self.name}"

@@ -1,4 +1,5 @@
 import generics
+from celery.result import AsyncResult
 from django.shortcuts import render, get_object_or_404
 from rest_framework import viewsets
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
@@ -11,10 +12,11 @@ from training.paginators import CustomPaginator
 from training.permissions import IsOwner
 from training.serializers import CourseSerializer, LessonSerializer, CourseDetailSerializer
 from user.permissions import IsModer
+from training.tasks import send_email
 
 
 class CourseViewSet(viewsets.ModelViewSet):
-    # serializer_class = CourseDetailSerializer
+    serializer_class = CourseDetailSerializer
     queryset = Course.objects.all()
     pagination_class = CustomPaginator
 
@@ -43,6 +45,23 @@ class CourseViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         course = serializer.save()
         course.owner = self.request.user
+        course.save()
+
+    def perform_update(self, serializer):
+        instance = serializer.save()
+        self.notification(instance.id)
+
+    def notification(self, course_id):
+        course = Course.objects.get(id=course_id)
+        if course.notification_task_id:
+            AsyncResult(course.notification_task_id).revoke(terminate=True)
+
+        result = send_email.apply_async(
+            args=[course_id],
+            countdown=4 * 60 * 60
+        )
+
+        course.notification_task_id = result.id
         course.save()
 
 
