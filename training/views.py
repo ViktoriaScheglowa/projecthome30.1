@@ -1,6 +1,9 @@
+from datetime import timedelta
+
 import generics
 from celery.result import AsyncResult
 from django.shortcuts import render, get_object_or_404
+from django.utils import timezone
 from rest_framework import viewsets
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -49,7 +52,13 @@ class CourseViewSet(viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         instance = serializer.save()
-        self.notification(instance.id)
+        four_hours_ago = timezone.now() - timedelta(hours=4)
+
+        # Проверяем, когда было обновлено последнее изменение
+        if instance.updated_at < four_hours_ago:
+            send_email.delay(instance.id)
+        else:
+            self.notification(instance.id)
 
     def notification(self, course_id):
         course = Course.objects.get(id=course_id)
