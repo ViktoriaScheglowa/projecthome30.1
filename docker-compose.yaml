@@ -1,25 +1,6 @@
 version: "3.12"
 
 services:
-  training:
-    build: .
-    context: ./training
-    dockerfile: Dockerfile
-    container_name: training
-    restart: always
-    env_file:
-      - .env
-    volumes:
-      - ./training:/app
-    command: >              
-      sh -c "python manage.py migrate &&
-             python manage.py runserver 0.0.0.0:8000"
-    ports:
-      - "8000:8000"
-    depends_on:
-      - db
-    networks:
-      - app_network
   web:
     build: .
     command: sh -c "python manage.py runserver 0.0.0.0:8000"
@@ -37,12 +18,14 @@ services:
 
   db:
     image: postgres:16.0
-    env_file:
-      - .env
+    environment:
+      POSTGRES_DB: ${NAME}
+      POSTGRES_USER: ${USER}
+      POSTGRES_PASSWORD: ${PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: [ "CMD-SHELL", "pg_isready -d ${NAME} -U ${USER}" ]
       interval: 30s
       timeout: 10s
       retries: 5
