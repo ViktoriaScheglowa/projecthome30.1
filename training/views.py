@@ -73,7 +73,7 @@ class CourseViewSet(viewsets.ModelViewSet):
         four_hours_ago = timezone.now() - timedelta(hours=4)
 
         # Проверяем, когда было обновлено последнее изменение
-        if instance.updated_at < four_hours_ago:
+        if instance.update_at < four_hours_ago:
             send_email.delay(instance.id)
         else:
             self.notification(instance.id)
