@@ -6,23 +6,42 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('user', '0001_initial'),
+        ("user", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='pay',
-            name='link',
-            field=models.URLField(blank=True, help_text='Укажите ссылку на оплату', max_length=400, null=True, verbose_name='Ссылка на оплату'),
+            model_name="pay",
+            name="link",
+            field=models.URLField(
+                blank=True,
+                help_text="Укажите ссылку на оплату",
+                max_length=400,
+                null=True,
+                verbose_name="Ссылка на оплату",
+            ),
         ),
         migrations.AddField(
-            model_name='pay',
-            name='payment_status',
-            field=models.CharField(blank=True, default='unpaid', help_text='Укажите статус оплаты', max_length=20, null=True, verbose_name='Статус оплаты'),
+            model_name="pay",
+            name="payment_status",
+            field=models.CharField(
+                blank=True,
+                default="unpaid",
+                help_text="Укажите статус оплаты",
+                max_length=20,
+                null=True,
+                verbose_name="Статус оплаты",
+            ),
         ),
         migrations.AddField(
-            model_name='pay',
-            name='session_id',
-            field=models.CharField(blank=True, help_text='Укажите id сессии', max_length=255, null=True, verbose_name='Id сессии'),
+            model_name="pay",
+            name="session_id",
+            field=models.CharField(
+                blank=True,
+                help_text="Укажите id сессии",
+                max_length=255,
+                null=True,
+                verbose_name="Id сессии",
+            ),
         ),
     ]

@@ -2,7 +2,8 @@ from rest_framework.serializers import ValidationError
 
 
 class LinkVideoValidator:
-    """Проверка валидности на отсутствие в материалах ссылок на сторонние ресурсы, кроме youtube.com"""
+    """Проверка валидности на отсутствие в материалах ссылок
+    на сторонние ресурсы, кроме youtube.com"""
 
     def __init__(self, field):
         self.field = field

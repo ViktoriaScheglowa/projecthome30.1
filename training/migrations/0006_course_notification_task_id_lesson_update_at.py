@@ -6,18 +6,25 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('training', '0005_alter_course_preview'),
+        ("training", "0005_alter_course_preview"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='course',
-            name='notification_task_id',
-            field=models.CharField(blank=True, max_length=250, null=True, verbose_name='id задачи уведомления'),
+            model_name="course",
+            name="notification_task_id",
+            field=models.CharField(
+                blank=True,
+                max_length=250,
+                null=True,
+                verbose_name="id задачи уведомления",
+            ),
         ),
         migrations.AddField(
-            model_name='lesson',
-            name='update_at',
-            field=models.DateTimeField(auto_now=True, verbose_name='Дата обновления урока'),
+            model_name="lesson",
+            name="update_at",
+            field=models.DateTimeField(
+                auto_now=True, verbose_name="Дата обновления урока"
+            ),
         ),
     ]

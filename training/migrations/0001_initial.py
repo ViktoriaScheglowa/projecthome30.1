@@ -7,37 +7,81 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Course',
+            name="Course",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=200, verbose_name='Название')),
-                ('preview', models.ImageField(help_text='Загрузите изображение курса', upload_to='media/preview', verbose_name='Изображение')),
-                ('description', models.TextField(blank=True, verbose_name='Описание')),
-                ('update_at', models.DateTimeField(auto_now=True, verbose_name='Дата обновления курса')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=200, verbose_name="Название")),
+                (
+                    "preview",
+                    models.ImageField(
+                        help_text="Загрузите изображение курса",
+                        upload_to="media/preview",
+                        verbose_name="Изображение",
+                    ),
+                ),
+                ("description", models.TextField(blank=True, verbose_name="Описание")),
+                (
+                    "update_at",
+                    models.DateTimeField(
+                        auto_now=True, verbose_name="Дата обновления курса"
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'курс',
-                'verbose_name_plural': 'курсы',
-                'ordering': ['title'],
+                "verbose_name": "курс",
+                "verbose_name_plural": "курсы",
+                "ordering": ["title"],
             },
         ),
         migrations.CreateModel(
-            name='Lesson',
+            name="Lesson",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=150, verbose_name='Название')),
-                ('description', models.TextField(blank=True, verbose_name='Описание')),
-                ('preview', models.ImageField(blank=True, null=True, upload_to='media/photos', verbose_name='Изображение')),
-                ('video', models.CharField(blank=True, help_text='Вставьте ссылку на видео', max_length=250, null=True, verbose_name='Ссылка на видео')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=150, verbose_name="Название")),
+                ("description", models.TextField(blank=True, verbose_name="Описание")),
+                (
+                    "preview",
+                    models.ImageField(
+                        blank=True,
+                        null=True,
+                        upload_to="media/photos",
+                        verbose_name="Изображение",
+                    ),
+                ),
+                (
+                    "video",
+                    models.CharField(
+                        blank=True,
+                        help_text="Вставьте ссылку на видео",
+                        max_length=250,
+                        null=True,
+                        verbose_name="Ссылка на видео",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Урок',
-                'verbose_name_plural': 'Уроки',
+                "verbose_name": "Урок",
+                "verbose_name_plural": "Уроки",
             },
         ),
     ]
