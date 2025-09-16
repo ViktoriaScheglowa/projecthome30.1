@@ -9,9 +9,9 @@ jobs:
       postgres:
         image: postgres:17
         env:
-          NAME: training
-          USER: postgres
-          PASSWORD: 15111983
+          POSTGRES_DB: training
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: 15111983
         ports:
           - 5432:5432
         options: >-
