@@ -102,6 +102,19 @@ jobs:
     needs: build
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy with rsync via SSH Action
+        uses: appleboy/ssh-action@v0.1.5
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: 22
+          script: |
+            rsync -avz --exclude 'pycache' . /var/www/html/projecthome30.1/
+            echo "Deployment completed successfully!"
       - name: Build containers
         uses: appleboy/ssh-action@master
         with:
