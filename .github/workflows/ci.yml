@@ -131,18 +131,18 @@ jobs:
 #          script: |
 #            rsync -avz --exclude 'pycache' . /var/www/html/projecthome30.1/
 #            echo "Deployment completed successfully!"
-      - name: Build containers
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          port: 22
-          script: |
-            C:/Users/user/projecthome30.1
-            git pull origin feature_finish
-            docker compose down
-            docker compose up -d --build
+#      - name: Build containers
+#        uses: appleboy/ssh-action@master
+#        with:
+#          host: ${{ secrets.SERVER_IP }}
+#          username: ${{ secrets.SSH_USER }}
+#          key: ${{ secrets.SSH_KEY }}
+#          port: 22
+#          script: |
+#            C:/Users/user/projecthome30.1
+#            git pull origin feature_finish
+#            docker compose down
+#            docker compose up -d --build
 
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.9.0
