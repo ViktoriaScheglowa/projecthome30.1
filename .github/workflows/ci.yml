@@ -123,22 +123,54 @@ jobs:
 
       - name: Setup SSH connection
         uses: appleboy/ssh-action@master
+        env:
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_KEY: ${{ secrets.SSH_KEY }}
         with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
+          host: ${{ env.SERVER_IP }}
+          username: ${{ env.SSH_USER }}
+          key: ${{ env.SSH_KEY }}
           port: 22
           script: |
             set -ex
-            rsync -avze "ssh -p 22" --delete --exclude='pycache' . ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:${{ secrets.DEPLOY_DIR }}          
-            cd ${{ secrets.DEPLOY_DIR }}          
-            if [ ! -d "venv" ]; then
-                python3 -m venv venv
-            fi
-            source venv/bin/activate && pip install -r requirements.txt          
-            python manage.py migrate          
-            python manage.py collectstatic --noinput          
-            sudo systemctl restart myapp.service || true
+            
+            rsync -avze "ssh -p 22" --delete --exclude='pycache' . ${{ env.SSH_USER }}@${{ env.SERVER_IP }}:~    
+            
+            ssh ${{ env.SSH_USER }}@${{ env.SERVER_IP }} << EOF
+              set -ex
+            
+              if [ ! -d "~/venv" ]; then
+                  python3 -m venv ~/venv
+              fi
+            
+              source ~/venv/bin/activate && pip install -r ~/requirements.txt
+            
+              python ~/manage.py migrate
+            
+              python ~/manage.py collectstatic --noinput
+            
+              sudo systemctl restart myapp.service || true
+            EOF
+
+#      - name: Setup SSH connection
+#        uses: appleboy/ssh-action@master
+#        with:
+#          host: ${{ secrets.SERVER_IP }}
+#          username: ${{ secrets.SSH_USER }}
+#          key: ${{ secrets.SSH_KEY }}
+#          port: 22
+#          script: |
+#            set -ex
+#            rsync -avze "ssh -p 22" --delete --exclude='pycache' . ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:${{ secrets.DEPLOY_DIR }}
+#            cd ${{ secrets.DEPLOY_DIR }}
+#            if [ ! -d "venv" ]; then
+#                python3 -m venv venv
+#            fi
+#            source venv/bin/activate && pip install -r requirements.txt
+#            python manage.py migrate
+#            python manage.py collectstatic --noinput
+#            sudo systemctl restart myapp.service || true
 #  deploy:
 #    runs-on: ubuntu-latest
 #    needs: build
