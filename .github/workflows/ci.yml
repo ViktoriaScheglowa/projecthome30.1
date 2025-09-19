@@ -129,7 +129,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: 22
           script: |
-            cd /home/${{ secrets.SERVER_USER }}/projecthome30.1 || mkdir -p /home/${{ secrets.SERVER_USER }}/projecthome30.1 && cd /home/${{ secrets.SERVER_USER }}/projecthome30.1
+            cd /home/${{ secrets.SSH_USER }}/projecthome30.1 || mkdir -p /home/${{ secrets.SSH_USER }}/projecthome30.1 && cd /home/${{ secrets.SSH_USER }}/projecthome30.1
             cat < 'EOF' > .env
             SECRET_KEY=${{ secrets.SECRET_KEY }}
             NAME=${{ secrets.NAME }}
