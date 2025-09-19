@@ -123,14 +123,10 @@ jobs:
 
       - name: Setup SSH connection
         uses: appleboy/ssh-action@master
-        env:
-          SERVER_IP: ${{ secrets.SERVER_IP }}
-          SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_KEY: ${{ secrets.SSH_KEY }}
         with:
-          host: ${{ env.SERVER_IP }}
-          username: ${{ env.SSH_USER }}
-          key: ${{ env.SSH_KEY }}
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
           port: 22
           script: |
             set -ex
