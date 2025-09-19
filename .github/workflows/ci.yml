@@ -121,7 +121,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup SSH connection
+      - name: Setup SSH connection and Deploy
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SERVER_IP }}
@@ -129,42 +129,42 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: 22
           script: |
-            cd /home/${{ secrets.SSH_USER }}/projecthome30.1 || mkdir -p /home/${{ secrets.SSH_USER }}/projecthome30.1 && cd /home/${{ secrets.SSH_USER }}/projecthome30.1
-            cat > .env << EOF
+            PROJECT_PATH="/home/${{ secrets.SSH_USER }}/projecthome30.1"
+            mkdir -p "$PROJECT_PATH"
+            cd "$PROJECT_PATH"
+            cat << 'EOF' > .env
             SECRET_KEY="${{ secrets.SECRET_KEY }}"
-         
+            NAME="${{ secrets.NAME }}"
+            USER="${{ secrets.USER }}"
+            PASSWORD="${{ secrets.PASSWORD }}"
+            HOST="${{ secrets.HOST }}"
+            PORT="${{ secrets.PORT }}"
+            
+            # Django
+            DEBUG=True
+            
+            # Stripe
+            STRIPE_API_KEY=${{ secrets.STRIPE_API_KEY }}
+            STRIPE_API_VERSION=${{ secrets.STRIPE_API_VERSION }}
+            
+            # Redis
+            REDIS_HOST=${{ secrets.REDIS_HOST }}
+            REDIS_PORT=${{ secrets.REDIS_PORT }}
+            REDIS_DB=${{ secrets.REDIS_DB }}
             EOF
-#            SECRET_KEY="${{ secrets.SECRET_KEY }}"
-#            NAME="${{ secrets.NAME }}"
-#            USER="${{ secrets.USER }}"
-#            PASSWORD="${{ secrets.PASSWORD }}"
-#            HOST="${{ secrets.HOST }}"
-#            PORT="${{ secrets.PORT }}"
-#
-#            # Django
-#            DEBUG=True
-#
-#            # Stripe
-#            STRIPE_API_KEY=${{ secrets.STRIPE_API_KEY }}
-#            STRIPE_API_VERSION=${{ secrets.STRIPE_API_VERSION }}
-#
-#            # Redis
-#            REDIS_HOST=${{ secrets.REDIS_HOST }}
-#            REDIS_PORT=${{ secrets.REDIS_PORT }}
-#            REDIS_DB=${{ secrets.REDIS_DB }}
-#
-#            EOF
             
             git pull origin feature1
             
-            source ~/venv/bin/activate && pip install -r ~/requirements.txt
-          
-            python ~/manage.py migrate
-          
-            python ~/manage.py collectstatic --noinput
-          
+            if [ ! -d "venv" ]; then
+              python3 -m venv venv
+            fi
+
+            source venv/bin/activate
+
+            pip install -r requirements.txt
+            python manage.py migrate
+            python manage.py collectstatic --noinput
             sudo systemctl restart myapp.service || true
-           
 
 #      - name: Setup SSH connection
 #        uses: appleboy/ssh-action@master
