@@ -120,14 +120,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.8.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_KEY }}
-
-      - name: Copy project files to server
-        run: |
-          rsync -avz --exclude '__pycache__' . ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:${{ secrets.DEPLOY_DIR }}  
 
       - name: Setup SSH connection
         uses: appleboy/ssh-action@master
@@ -137,25 +129,37 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: 22
           script: |
-            set -ex
+            cd /home/${{ secrets.SERVER_USER }}/projecthome30.1 || mkdir -p /home/${{ secrets.SERVER_USER }}/projecthome30.1 && cd /home/${{ secrets.SERVER_USER }}/projecthome30.1
+            cat < 'EOF' > .env
+            SECRET_KEY=${{ secrets.SECRET_KEY }}
+            NAME=${{ http://secrets.NAME USER=${{ secrets.USER }}
+            PASSWORD=${{ secrets.PASSWORD }}
+            HOST=${{ http://secrets.HOST PORT=${{ secrets.PORT }}
             
-            rsync -avze "ssh -p 22" --delete --exclude='pycache' . ${{ env.SSH_USER }}@${{ env.SERVER_IP }}:~    
+            # Django
+            DEBUG=True
             
-            ssh ${{ env.SSH_USER }}@${{ env.SERVER_IP }} << EOF
-              set -ex
+            # Stripe
+            STRIPE_API_KEY=${{ secrets.STRIPE_API_KEY }}
+            STRIPE_API_VERSION=${{ secrets.STRIPE_API_VERSION }}
             
-              if [ ! -d "~/venv" ]; then
-                  python3 -m venv ~/venv
-              fi
+            # Redis
+            REDIS_HOST=${{ secrets.REDIS_HOST }}
+            REDIS_PORT=${{ secrets.REDIS_PORT }}
+            REDIS_DB=${{ secrets.REDIS_DB }}
             
-              source ~/venv/bin/activate && pip install -r ~/requirements.txt
-            
-              python ~/manage.py migrate
-            
-              python ~/manage.py collectstatic --noinput
-            
-              sudo systemctl restart myapp.service || true
             EOF
+            
+            git pull origin feature1
+            
+            source ~/venv/bin/activate && pip install -r ~/requirements.txt
+          
+            python ~/manage.py migrate
+          
+            python ~/manage.py collectstatic --noinput
+          
+            sudo systemctl restart myapp.service || true
+           
 
 #      - name: Setup SSH connection
 #        uses: appleboy/ssh-action@master
