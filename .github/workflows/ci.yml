@@ -132,9 +132,11 @@ jobs:
             cd /home/${{ secrets.SERVER_USER }}/projecthome30.1 || mkdir -p /home/${{ secrets.SERVER_USER }}/projecthome30.1 && cd /home/${{ secrets.SERVER_USER }}/projecthome30.1
             cat < 'EOF' > .env
             SECRET_KEY=${{ secrets.SECRET_KEY }}
-            NAME=${{ http://secrets.NAME USER=${{ secrets.USER }}
+            NAME=${{ http://secrets.NAME }}
+            USER=${{ secrets.USER }}
             PASSWORD=${{ secrets.PASSWORD }}
-            HOST=${{ http://secrets.HOST PORT=${{ secrets.PORT }}
+            HOST=${{ http://secrets.HOST }}
+            PORT=${{ secrets.PORT }}
             
             # Django
             DEBUG=True
