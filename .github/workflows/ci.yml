@@ -130,27 +130,30 @@ jobs:
           port: 22
           script: |
             cd /home/${{ secrets.SSH_USER }}/projecthome30.1 || mkdir -p /home/${{ secrets.SSH_USER }}/projecthome30.1 && cd /home/${{ secrets.SSH_USER }}/projecthome30.1
-            cat < 'EOF' > .env
+            cat > .env << EOF
             SECRET_KEY="${{ secrets.SECRET_KEY }}"
-            NAME="${{ secrets.NAME }}"
-            USER="${{ secrets.USER }}"
-            PASSWORD="${{ secrets.PASSWORD }}"
-            HOST="${{ secrets.HOST }}"
-            PORT="${{ secrets.PORT }}"
-            
-            # Django
-            DEBUG=True
-            
-            # Stripe
-            STRIPE_API_KEY=${{ secrets.STRIPE_API_KEY }}
-            STRIPE_API_VERSION=${{ secrets.STRIPE_API_VERSION }}
-            
-            # Redis
-            REDIS_HOST=${{ secrets.REDIS_HOST }}
-            REDIS_PORT=${{ secrets.REDIS_PORT }}
-            REDIS_DB=${{ secrets.REDIS_DB }}
-            
+         
             EOF
+#            SECRET_KEY="${{ secrets.SECRET_KEY }}"
+#            NAME="${{ secrets.NAME }}"
+#            USER="${{ secrets.USER }}"
+#            PASSWORD="${{ secrets.PASSWORD }}"
+#            HOST="${{ secrets.HOST }}"
+#            PORT="${{ secrets.PORT }}"
+#
+#            # Django
+#            DEBUG=True
+#
+#            # Stripe
+#            STRIPE_API_KEY=${{ secrets.STRIPE_API_KEY }}
+#            STRIPE_API_VERSION=${{ secrets.STRIPE_API_VERSION }}
+#
+#            # Redis
+#            REDIS_HOST=${{ secrets.REDIS_HOST }}
+#            REDIS_PORT=${{ secrets.REDIS_PORT }}
+#            REDIS_DB=${{ secrets.REDIS_DB }}
+#
+#            EOF
             
             git pull origin feature1
             
