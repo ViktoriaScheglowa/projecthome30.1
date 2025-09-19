@@ -6,13 +6,19 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('user', '0002_pay_link_pay_payment_status_pay_session_id'),
+        ("user", "0002_pay_link_pay_payment_status_pay_session_id"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='user',
-            name='country',
-            field=models.CharField(blank=True, help_text='Введите страну проживания', max_length=50, null=True, verbose_name='Страна'),
+            model_name="user",
+            name="country",
+            field=models.CharField(
+                blank=True,
+                help_text="Введите страну проживания",
+                max_length=50,
+                null=True,
+                verbose_name="Страна",
+            ),
         ),
     ]

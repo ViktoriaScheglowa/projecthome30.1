@@ -10,7 +10,7 @@ from training.models import Course, Subscription
 
 @shared_task
 def send_email(course_id=None):
-    """ Рассылка писем пользователям об обновлении материалов курса. """
+    """Рассылка писем пользователям об обновлении материалов курса."""
     course = Course.objects.get(id=course_id)
     if timezone.now() - course.update_at >= timedelta(hours=4):
         subscriptions = Subscription.objects.filter(course=course)
@@ -20,9 +20,9 @@ def send_email(course_id=None):
                 send_mail(
                     subject=f'Курс "{course.title}" обновлен',
                     message=f'Добрый день! Вы подписаны на обновление курса "{course.title}". Вы уже можете посмотреть '
-                            f'их содержание с учетом изменений в личном кабинете.',
-                    from_email= EMAIL_HOST_USER,
-                    recipient_list=emails
+                    f"их содержание с учетом изменений в личном кабинете.",
+                    from_email=EMAIL_HOST_USER,
+                    recipient_list=emails,
                 )
                 print(f"Письма отправлены {len(emails)} подписчикам")
                 return f"Уведомления отправлены для курса: {course.title}"

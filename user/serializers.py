@@ -16,12 +16,12 @@ class UserRegisterSerializer(ModelSerializer):
 
 
 class UserSerializers(ModelSerializer):
-    payment = PaySerializer(many=True, source='pay_set', read_only=True)
+    payment = PaySerializer(many=True, source="pay_set", read_only=True)
 
     class Meta:
         model = User
         fields = "__all__"
-        extra_fields = ['payment']
+        extra_fields = ["payment"]
 
     def get_field_names(self, declared_fields, info):
         expanded_fields = super().get_field_names(declared_fields, info)
