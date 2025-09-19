@@ -141,7 +141,7 @@ jobs:
             PORT="${{ secrets.PORT }}"
             
             # Django
-            DEBUG=True
+            DEBUG=False
             
             # Stripe
             STRIPE_API_KEY=${{ secrets.STRIPE_API_KEY }}
