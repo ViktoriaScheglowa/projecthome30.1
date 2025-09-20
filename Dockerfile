@@ -9,7 +9,7 @@ RUN apt-get update \
 
 COPY requirements.txt ./
 
-RUN ./venv/bin/pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
