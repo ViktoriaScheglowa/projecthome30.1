@@ -153,7 +153,8 @@ jobs:
             REDIS_DB=${{ secrets.REDIS_DB }}
             EOF
             
-            git pull origin feature1
+            git fetch --all
+            git reset --hard origin/${{ github.ref_name }}
             
             if [ ! -d "venv" ]; then
               python3 -m venv venv
