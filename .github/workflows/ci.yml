@@ -156,7 +156,7 @@ jobs:
             REDIS_HOST=${{ secrets.REDIS_HOST }}
             REDIS_PORT=${{ secrets.REDIS_PORT }}
             REDIS_DB=${{ secrets.REDIS_DB }}
-            EOF
+            
             
             git fetch --all
             git reset --hard origin/${{ github.ref_name }}
@@ -172,8 +172,7 @@ jobs:
             mkdir static
             pip3 install -r requirements.txt
             python3 manage.py migrate
-            python3 manage.py runserver 0.0.0.0:8000
-
+            EOF
 #      - name: Setup SSH connection
 #        uses: appleboy/ssh-action@master
 #        with:
