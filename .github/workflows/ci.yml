@@ -163,9 +163,13 @@ jobs:
             
             sudo apt install python3 python3-pip python3-venv -y
             cd ..
+            sudo apt install postgresql postgresql-contrib
+            sudo -u postgres psql -c "ALTER USER ${{ secrets.USER }} PASSWORD '${{ secrets.PASSWORD }}';"
+            sudo -u postgres psql -c 'create database ${{ secrets.NAME }};'
             python -m venv ./.venv 
             . ./venv/bin/activate
-            cd projecthome30.1/            
+            cd projecthome30.1/  
+            mkdir static
             pip3 install -r requirements.txt
             python3 manage.py migrate
             python3 manage.py collectstatic --noinput
