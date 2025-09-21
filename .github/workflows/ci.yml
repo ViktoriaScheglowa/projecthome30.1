@@ -172,8 +172,7 @@ jobs:
             mkdir static
             pip3 install -r requirements.txt
             python3 manage.py migrate
-            python3 manage.py collectstatic --noinput
-            sudo systemctl restart myapp.service || true
+            python3 manage.py runserver 0.0.0.0:8000
 
 #      - name: Setup SSH connection
 #        uses: appleboy/ssh-action@master
