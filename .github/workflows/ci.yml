@@ -158,8 +158,8 @@ jobs:
             
             sudo apt install python3 python3-pip python3-venv -y
             python -m venv ./.venv 
-            . ./.venv/bin/activate
-                        
+            . ./venv/bin/activate
+            cd projecthome30.1/            
             pip3 install -r requirements.txt
             python3 manage.py migrate
             python3 manage.py collectstatic --noinput
