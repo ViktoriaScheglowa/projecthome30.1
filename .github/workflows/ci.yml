@@ -140,6 +140,11 @@ jobs:
             HOST="${{ secrets.HOST }}"
             PORT="${{ secrets.PORT }}"
             
+            EMAIL_HOST="${{ secrets.EMAIL_HOST }}"
+            EMAIL_PORT="${{ secrets.EMAIL_PORT }}"
+            EMAIL_USE_SSL="${{ secrets.EMAIL_USE_SSL }}"
+            EMAIL_USE_TLS="${{ secrets.EMAIL_USE_TLS }}"
+            
             # Django
             DEBUG=False
             
@@ -151,22 +156,23 @@ jobs:
             REDIS_HOST=${{ secrets.REDIS_HOST }}
             REDIS_PORT=${{ secrets.REDIS_PORT }}
             REDIS_DB=${{ secrets.REDIS_DB }}
-            EOF
+            
             
             git fetch --all
             git reset --hard origin/${{ github.ref_name }}
             
-            if [ ! -d "venv" ]; then
-              python3 -m venv venv
-            fi
-
-            ./venv/bin/pip install -r requirements.txt
-
-            pip install -r requirements.txt
-            python manage.py migrate
-            python manage.py collectstatic --noinput
-            sudo systemctl restart myapp.service || true
-
+            sudo apt install python3 python3-pip python3-venv -y
+            cd ..
+            sudo apt install postgresql postgresql-contrib
+            sudo -u postgres psql -c "ALTER USER ${{ secrets.USER }} PASSWORD '${{ secrets.PASSWORD }}';"
+            sudo -u postgres psql -c 'create database ${{ secrets.NAME }};'
+            python -m venv ./.venv 
+            . ./venv/bin/activate
+            cd projecthome30.1/  
+            mkdir static
+            pip3 install -r requirements.txt
+            python3 manage.py migrate
+            EOF
 #      - name: Setup SSH connection
 #        uses: appleboy/ssh-action@master
 #        with:
