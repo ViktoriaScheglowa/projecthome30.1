@@ -147,11 +147,9 @@ jobs:
             
             # Django
             DEBUG=False
-            
             # Stripe
             STRIPE_API_KEY=${{ secrets.STRIPE_API_KEY }}
             STRIPE_API_VERSION=${{ secrets.STRIPE_API_VERSION }}
-            
             # Redis
             REDIS_HOST=${{ secrets.REDIS_HOST }}
             REDIS_PORT=${{ secrets.REDIS_PORT }}
