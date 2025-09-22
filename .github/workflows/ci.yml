@@ -156,7 +156,6 @@ jobs:
             REDIS_HOST=${{ secrets.REDIS_HOST }}
             REDIS_PORT=${{ secrets.REDIS_PORT }}
             REDIS_DB=${{ secrets.REDIS_DB }}
-                       
             EOF
             
             if [ ! -d ".venv" ]; then
