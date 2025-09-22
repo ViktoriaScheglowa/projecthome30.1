@@ -168,11 +168,10 @@ jobs:
             
       - name: Install dependencies on server
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-            cd ${{ secrets.DEPLOY_DIR }}
+#          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+            cd projecthome30.1/
             python3 -m venv ./.venv 
             . ./venv/bin/activate
-            cd projecthome30.1/  
             pip3 install -r requirements.txt
           EOF
 
