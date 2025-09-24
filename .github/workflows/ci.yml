@@ -155,8 +155,7 @@ jobs:
             REDIS_PORT=${{ secrets.REDIS_PORT }}
             REDIS_DB=${{ secrets.REDIS_DB }}
             EOF
-            EOF
-            
+                        
             if [ ! -d ".venv" ]; then
               python3 -m venv venv
             fi
