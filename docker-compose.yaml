@@ -83,7 +83,8 @@ volumes:
   postgres_data:
   static_volume:
   redis_data:
-  media_volume
+  media_volume:
+
 
 #
 #version: "3.12"
