@@ -93,11 +93,11 @@ DATABASES = {
     }
 }
 
-if 'test' in sys.argv:
+if "test" in sys.argv:
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
         }
     }
 # Password validation
@@ -137,10 +137,10 @@ USE_TZ = True
 STATIC_ROOT = "/projecthome30.1/staticfiles"
 
 STATICFILES_DIRS = [
-BASE_DIR / "static",
+    BASE_DIR / "static",
 ]
 
-STATIC_URL = 'static/'
+STATIC_URL = "static/"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
