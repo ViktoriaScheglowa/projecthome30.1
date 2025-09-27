@@ -23,7 +23,7 @@ services:
       - "80:80"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - staticfiles://projecthome30.1/static
+      - staticfiles:/usr/share/nginx/html/static
       - media_volume:/media
     depends_on:
       - web
