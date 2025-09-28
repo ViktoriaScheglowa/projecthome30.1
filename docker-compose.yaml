@@ -58,7 +58,7 @@ services:
     build: .
     command: celery -A config worker --loglevel=info
     volumes:
-      - .:/drf-spa
+      - .:/projecthome30.1
     env_file:
       - .env
     depends_on:
@@ -69,7 +69,7 @@ services:
     build: .
     command: celery -A config beat --loglevel=info
     volumes:
-      - .:/drf-spa
+      - .:/projecthome30.1
     env_file:
       - .env
     depends_on:
@@ -81,7 +81,7 @@ networks:
 
 volumes:
   postgres_data:
-  static_volume:
+  staticfiles:
   redis_data:
   media_volume:
 
