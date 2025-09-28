@@ -81,6 +81,7 @@ networks:
 
 volumes:
   postgres_data:
+  static_volume:
   staticfiles:
   redis_data:
   media_volume:
