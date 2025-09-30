@@ -3,22 +3,26 @@ version: "3.12"
 services:
   web:
     build: .
-    command: sh -c "python manage.py runserver 0.0.0.0:8000"
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     volumes:
       - .:/projecthome30.1
       - static_volume:/projecthome30.1/static
       - media_volume:/projecthome30.1/media
     ports:
       - "8000:8000"
+    environment:
+      DATABASE_HOST: db
+      REDIS_HOST: redis
     depends_on:
       - db
       - redis
+      - celery_beat
     env_file:
       - .env
 
   nginx:
     image: nginx:stable-alpine
-    container_name: nginx_proxy
+    container_name: nginx_proxy_project30.1
     ports:
       - "80:80"
     volumes:
@@ -30,6 +34,7 @@ services:
 
   db:
     image: postgres:16.0
+    container_name: postgres_project30.1
     environment:
       POSTGRES_DB: ${NAME}
       POSTGRES_USER: ${USER}
@@ -44,6 +49,7 @@ services:
 
   redis:
     image: redis:7
+    container_name: redis_project30.1
     volumes:
       - redis_data:/data
     env_file:
