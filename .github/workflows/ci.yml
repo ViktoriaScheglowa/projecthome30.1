@@ -138,6 +138,7 @@ jobs:
             USER="${{ secrets.USER }}"
             PASSWORD="${{ secrets.PASSWORD }}"
             PORT="${{ secrets.PORT }}"
+            HOST="${{ secrets.HOST }}"
             
             EMAIL_HOST="${{ secrets.EMAIL_HOST }}"
             EMAIL_PORT="${{ secrets.EMAIL_PORT }}"
@@ -160,10 +161,6 @@ jobs:
             
             git fetch --all
             git reset --hard origin/${{ github.ref_name }}
-            curl -fsSL https://get.docker.com -o get-docker.sh
-
-            # Запускаем скрипт
-            sudo sh get-docker.sh
 
             sudo apt install python3 python3-pip python3-venv -y
             # Останавливаем старые контейнеры, если они есть
