@@ -51,11 +51,6 @@ services:
   redis:
     image: redis:7
     container_name: redis_project30.1
-    healthcheck:
-      test: [ "CMD", "redis-cli", "-a", "$REDIS_PASSWORD", "ping" ]
-      interval: 30s
-      timeout: 15s
-      retries: 5
 
   celery:
     build: .
