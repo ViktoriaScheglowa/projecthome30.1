@@ -93,7 +93,7 @@ DATABASES = {
     }
 }
 
-if "test" in sys.argv:
+if "test" in sys.argv and "migrat" in sys.argv:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
