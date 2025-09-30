@@ -162,7 +162,11 @@ jobs:
             
             git fetch --all
             git reset --hard origin/${{ github.ref_name }}
-            
+            curl -fsSL https://get.docker.com -o get-docker.sh
+
+            # Запускаем скрипт
+            sudo sh get-docker.sh
+
             sudo apt install python3 python3-pip python3-venv -y
             # Останавливаем старые контейнеры, если они есть
             sudo docker-compose down || true
