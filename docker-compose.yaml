@@ -8,8 +8,6 @@ services:
       - .:/projecthome30.1
       - static_volume:/projecthome30.1/static
       - media_volume:/projecthome30.1/media
-    ports:
-      - "8000:8000"
     environment:
       DATABASE_HOST: db
       REDIS_HOST: redis
