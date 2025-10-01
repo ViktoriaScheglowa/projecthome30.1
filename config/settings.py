@@ -19,6 +19,7 @@ ALLOWED_HOSTS = ["*"]
 def get_database_config():
     """Гибкая конфигурация БД для разных окружений"""
     if os.getenv('GITHUB_ACTIONS') or os.getenv('CI'):
+        print("GITHUB_ACTIONS")
         return {
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': os.getenv('NAME', 'test_db'),
@@ -29,6 +30,7 @@ def get_database_config():
         }
     # Если запуск в Docker
     elif os.getenv('DOCKER_ENV'):
+        print("DOCKER_ENV")
         return {
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': os.getenv('NAME'),
@@ -39,6 +41,7 @@ def get_database_config():
         }
     # Локальная разработка (не в Docker)
     else:
+        print("не в Docker")
         return {
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': os.getenv('NAME', 'local_db'),
