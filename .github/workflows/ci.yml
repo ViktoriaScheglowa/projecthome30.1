@@ -28,8 +28,7 @@ jobs:
           POSTGRES_DB: training
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: 15111983
-        ports:
-          - 5432:5432
+        ports: ['5432:5432']
         options: >-
           --health-cmd "pg_isready -U postgres"
           --health-interval 10s
@@ -64,7 +63,7 @@ jobs:
         NAME: training
         USER: postgres
         PASSWORD: 15111983
-        HOST: 127.0.0.1
+        HOST: db
         PORT: 5432
         STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
         CELERY_RESULT_BACKEND: redis://127.0.0.1:6379/0
