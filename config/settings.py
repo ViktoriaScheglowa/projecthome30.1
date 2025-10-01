@@ -16,6 +16,39 @@ DEBUG = False
 ALLOWED_HOSTS = ["*"]
 
 
+def get_database_config():
+    """Гибкая конфигурация БД для разных окружений"""
+    if os.getenv('GITHUB_ACTIONS') or os.getenv('CI'):
+        return {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('NAME', 'test_db'),
+            'USER': os.getenv('USER', 'postgres'),
+            'PASSWORD': os.getenv('PASSWORD', 'postgres'),
+            'HOST': os.getenv('HOST', 'localhost'),
+            'PORT': os.getenv('PORT', '5432'),
+        }
+    # Если запуск в Docker
+    elif os.getenv('DOCKER_ENV'):
+        return {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('NAME'),
+            'USER': os.getenv('USER'),
+            'PASSWORD': os.getenv('PASSWORD'),
+            'HOST': 'db',
+            'PORT': os.getenv('PORT', '5432'),
+        }
+    # Локальная разработка (не в Docker)
+    else:
+        return {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('NAME', 'local_db'),
+            'USER': os.getenv('USER', 'postgres'),
+            'PASSWORD': os.getenv('PASSWORD', 'postgres'),
+            'HOST': os.getenv('HOST', 'localhost'),
+            'PORT': os.getenv('PORT', '5432'),
+        }
+
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -82,17 +115,10 @@ REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": os.getenv("NAME"),
-        "USER": os.getenv("USER"),
-        "PASSWORD": os.getenv("PASSWORD"),
-        "HOST": os.getenv("HOST", "db"),
-        "PORT": os.getenv("PORT"),
-    }
-}
 
+DATABASES = {
+    'default': get_database_config()
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
