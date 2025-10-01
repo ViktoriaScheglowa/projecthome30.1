@@ -10,6 +10,9 @@ services:
       - media_volume:/projecthome30.1/media
     env_file:
       - .env
+    environment:
+      - HOST=db
+      - PORT=5432
     depends_on:
       - db
       - redis
@@ -56,6 +59,9 @@ services:
       - .:/projecthome30.1
     env_file:
       - .env
+    environment:
+      - HOST=db
+      - PORT=5432
     depends_on:
       - db
       - redis
@@ -67,6 +73,9 @@ services:
       - .:/projecthome30.1
     env_file:
       - .env
+    environment:
+      - HOST=db
+      - PORT=5432
     depends_on:
       - db
       - redis
