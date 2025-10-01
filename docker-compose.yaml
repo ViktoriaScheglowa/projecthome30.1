@@ -1,9 +1,9 @@
-version: "3.12"
+version: "3.8"
 
 services:
   web:
     build: .
-    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    command: sh -c "sleep 10 && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     volumes:
       - .:/projecthome30.1
       - static_volume:/projecthome30.1/static
@@ -13,11 +13,15 @@ services:
     environment:
       - HOST=db
       - PORT=5432
+      - CELERY_BROKER_URL=redis://redis:6379/${CELERY_DB:-0}
+      - CELERY_RESULT_BACKEND=redis://redis:6379/${CELERY_DB:-0}
     depends_on:
-      - db
-      - redis
-      - celery_beat
-
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
 
   nginx:
     image: nginx:stable-alpine
@@ -26,7 +30,7 @@ services:
       - "80:80"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - staticfiles:/usr/share/nginx/html/static
+      - static_volume:/usr/share/nginx/html/static
       - media_volume:/media
     depends_on:
       - web
@@ -34,8 +38,6 @@ services:
   db:
     image: postgres:16.3
     container_name: postgres_project30.1
-    env_file:
-      - .env
     environment:
       POSTGRES_DB: ${NAME}
       POSTGRES_USER: ${USER}
@@ -43,18 +45,27 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -d ${NAME} -U ${USER}" ]
-      interval: 30s
-      timeout: 15s
-      retries: 5
+      test: [ "CMD-SHELL", "pg_isready -U ${USER} -d ${NAME}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
 
   redis:
-    image: redis:7
+    image: redis:7-alpine
     container_name: redis_project30.1
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
   celery:
     build: .
-    command: celery -A config worker --loglevel=info
+    command: sh -c "sleep 15 && celery -A config worker --loglevel=info"
     volumes:
       - .:/projecthome30.1
     env_file:
@@ -62,13 +73,17 @@ services:
     environment:
       - HOST=db
       - PORT=5432
+      - CELERY_BROKER_URL=redis://redis:6379/${CELERY_DB:-0}
+      - CELERY_RESULT_BACKEND=redis://redis:6379/${CELERY_DB:-0}
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   celery_beat:
     build: .
-    command: celery -A config beat --loglevel=info
+    command: sh -c "sleep 20 && celery -A config beat --loglevel=info"
     volumes:
       - .:/projecthome30.1
     env_file:
@@ -76,14 +91,16 @@ services:
     environment:
       - HOST=db
       - PORT=5432
+      - CELERY_BROKER_URL=redis://redis:6379/${CELERY_DB:-0}
+      - CELERY_RESULT_BACKEND=redis://redis:6379/${CELERY_DB:-0}
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
 volumes:
   postgres_data:
   static_volume:
-  staticfiles:
-  redis_data:
   media_volume:
-
+  redis_data:
