@@ -120,6 +120,10 @@ DATABASES = {
     'default': get_database_config()
 }
 
+print("-----------DATABASES-----------")
+print(get_database_config())
+print("-------------------------------")
+
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 

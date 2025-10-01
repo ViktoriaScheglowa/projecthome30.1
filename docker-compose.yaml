@@ -3,29 +3,38 @@ version: "3.8"
 services:
   web:
     build: .
-    command: sh -c "sleep 10 && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    command: >
+      sh -c "
+        echo 'Waiting for database...' &&
+        sleep 10 &&
+        echo 'Running migrations...' &&
+        python manage.py migrate &&
+        echo 'Starting server...' &&
+        python manage.py runserver 0.0.0.0:8000
+      "
     volumes:
       - .:/projecthome30.1
-      - static_volume:/projecthome30.1/static
-      - media_volume:/projecthome30.1/media
-    env_file:
-      - .env
     environment:
-      - HOST=db
+      - DATABASE_HOST=db
+      - NAME=${NAME}
+      - USER=${USER}
+      - PASSWORD=${PASSWORD}
       - PORT=5432
       - CELERY_BROKER_URL=redis://redis:6379/${CELERY_DB:-0}
       - CELERY_RESULT_BACKEND=redis://redis:6379/${CELERY_DB:-0}
     depends_on:
       db:
         condition: service_healthy
-      redis:
-        condition: service_healthy
     ports:
       - "8001:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   nginx:
     image: nginx:stable-alpine
-    container_name: nginx_proxy_project30.1
     ports:
       - "80:80"
     volumes:
@@ -33,11 +42,11 @@ services:
       - static_volume:/usr/share/nginx/html/static
       - media_volume:/media
     depends_on:
-      - web
+      web:
+        condition: service_healthy
 
   db:
     image: postgres:16.3
-    container_name: postgres_project30.1
     environment:
       POSTGRES_DB: ${NAME}
       POSTGRES_USER: ${USER}
@@ -45,7 +54,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${USER} -d ${NAME}" ]
+      test: ["CMD-SHELL", "pg_isready -U ${USER} -d ${NAME}"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -53,25 +62,31 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: redis_project30.1
     command: redis-server --appendonly yes
     volumes:
       - redis_data:/data
     healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
+      test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 3s
       retries: 5
 
   celery:
     build: .
-    command: sh -c "sleep 15 && celery -A config worker --loglevel=info"
+    command: >
+      sh -c "
+        echo 'Waiting for services...' &&
+        sleep 20 &&
+        echo 'Starting Celery worker...' &&
+        celery -A config worker --loglevel=info
+      "
     volumes:
       - .:/projecthome30.1
-    env_file:
-      - .env
     environment:
-      - HOST=db
+      - DATABASE_HOST=db
+      - NAME=${NAME}
+      - USER=${USER}
+      - PASSWORD=${PASSWORD}
       - PORT=5432
       - CELERY_BROKER_URL=redis://redis:6379/${CELERY_DB:-0}
       - CELERY_RESULT_BACKEND=redis://redis:6379/${CELERY_DB:-0}
@@ -83,13 +98,20 @@ services:
 
   celery_beat:
     build: .
-    command: sh -c "sleep 20 && celery -A config beat --loglevel=info"
+    command: >
+      sh -c "
+        echo 'Waiting for services...' &&
+        sleep 25 &&
+        echo 'Starting Celery beat...' &&
+        celery -A config beat --loglevel=info
+      "
     volumes:
       - .:/projecthome30.1
-    env_file:
-      - .env
     environment:
-      - HOST=db
+      - DATABASE_HOST=db
+      - NAME=${NAME}
+      - USER=${USER}
+      - PASSWORD=${PASSWORD}
       - PORT=5432
       - CELERY_BROKER_URL=redis://redis:6379/${CELERY_DB:-0}
       - CELERY_RESULT_BACKEND=redis://redis:6379/${CELERY_DB:-0}
