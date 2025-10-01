@@ -10,9 +10,6 @@ services:
       - media_volume:/projecthome30.1/media
     env_file:
       - .env
-    environment:
-      DATABASE_HOST: db
-      REDIS_HOST: redis
     depends_on:
       - db
       - redis
@@ -59,9 +56,6 @@ services:
       - .:/projecthome30.1
     env_file:
       - .env
-    environment:
-      DATABASE_HOST: db
-      REDIS_HOST: redis
     depends_on:
       - db
       - redis
@@ -73,15 +67,9 @@ services:
       - .:/projecthome30.1
     env_file:
       - .env
-    environment:
-      DATABASE_HOST: db
-      REDIS_HOST: redis
     depends_on:
       - db
       - redis
-
-networks:
-  default:
 
 volumes:
   postgres_data:
