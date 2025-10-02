@@ -125,10 +125,10 @@ jobs:
         - name: Deploy to server
           run: |
             ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-            docker push ${{ secrets.DOCKER_USERNAME }}/hab:${{ github.sha }}
+            docker push ${{ secrets.DOCKER_HUB_USERNAME }}/hab:${{ github.sha }}
             docker stop hab || true
             docker rm hab || true
-            docker run -d --name hab -p 80:8000 ${{ secrets.DOCKER_USERNAME }}/hab:${{ github.sha }}
+            docker run -d --name hab -p 80:8000 ${{ secrets.DOCKER_HUB_USERNAME }}/hab:${{ github.sha }}
             EOF
             
 
