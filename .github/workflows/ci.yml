@@ -147,6 +147,10 @@ jobs:
           echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
 
           # Pull the image
+          if docker ps -a | grep -q hab; then
+              docker stop hab
+              docker rm hab
+          fi
           docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/hab:${{ github.sha }}
 
           # Stop and remove existing container
