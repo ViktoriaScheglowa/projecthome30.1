@@ -48,9 +48,9 @@ class CourseTestCase(APITestCase):
         data = response.json()
 
         # self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-#         # self.assertEqual(data.get("title"), self.course.title)
-#
-#         # self.assertEqual(response.json().get("owner"), self.user.id)
+        #         # self.assertEqual(data.get("title"), self.course.title)
+        #
+        #         # self.assertEqual(response.json().get("owner"), self.user.id)
         self.assertTrue(Course.objects.all().count(), 2)
 
     # def test_course_update(self):
@@ -62,7 +62,7 @@ class CourseTestCase(APITestCase):
     #
     #     # self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        # self.assertEqual(data.get("description"), "Научим создавать приложения.")
+    # self.assertEqual(data.get("description"), "Научим создавать приложения.")
 
     def test_course_delete(self):
         """Тестирование удаления курса."""
@@ -80,6 +80,8 @@ class CourseTestCase(APITestCase):
     #     response = self.client.delete(url)
     #
     #     self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
 #
 #         self.assertEqual(Course.objects.all().count(), 1)
 #

@@ -16,6 +16,42 @@ DEBUG = False
 ALLOWED_HOSTS = ["*"]
 
 
+def get_database_config():
+    """Гибкая конфигурация БД для разных окружений"""
+    if os.getenv("GITHUB_ACTIONS") or os.getenv("CI"):
+        print("GITHUB_ACTIONS")
+        return {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.getenv("NAME", "test_db"),
+            "USER": os.getenv("USER", "postgres"),
+            "PASSWORD": os.getenv("PASSWORD", "postgres"),
+            "HOST": os.getenv("HOST", "localhost"),
+            "PORT": os.getenv("PORT", "5432"),
+        }
+    # Если запуск в Docker
+    elif os.getenv("DOCKER_ENV"):
+        print("DOCKER_ENV")
+        return {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.getenv("NAME"),
+            "USER": os.getenv("USER"),
+            "PASSWORD": os.getenv("PASSWORD"),
+            "HOST": "db",
+            "PORT": os.getenv("PORT", "5432"),
+        }
+    # Локальная разработка (не в Docker)
+    else:
+        print("не в Docker")
+        return {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.getenv("NAME", "local_db"),
+            "USER": os.getenv("USER", "postgres"),
+            "PASSWORD": os.getenv("PASSWORD", "postgres"),
+            "HOST": os.getenv("HOST", "localhost"),
+            "PORT": os.getenv("PORT", "5432"),
+        }
+
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -82,24 +118,13 @@ REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": os.getenv("NAME"),
-        "USER": os.getenv("USER"),
-        "PASSWORD": os.getenv("PASSWORD"),
-        "HOST": os.getenv("HOST"),
-        "PORT": os.getenv("PORT"),
-    }
-}
 
-if 'test' in sys.argv:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
+DATABASES = {"default": get_database_config()}
+
+print("-----------DATABASES-----------")
+print(get_database_config())
+print("-------------------------------")
+
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
@@ -134,8 +159,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
+STATIC_ROOT = "/projecthome30.1/staticfiles"
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
 STATIC_URL = "static/"
-STATICFILES_DIRS = [BASE_DIR / "static"]
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
@@ -193,7 +223,7 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",
+        "LOCATION": "redis://localhost:6379/1",
         "STATIC_ROOT": os.path.join(BASE_DIR, "static"),
     }
 }

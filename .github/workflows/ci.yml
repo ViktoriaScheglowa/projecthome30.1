@@ -28,8 +28,7 @@ jobs:
           POSTGRES_DB: training
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: 15111983
-        ports:
-          - 5432:5432
+        ports: ['5432:5432']
         options: >-
           --health-cmd "pg_isready -U postgres"
           --health-interval 10s
@@ -61,11 +60,11 @@ jobs:
     - name: Run migrations
       env:
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
-        NAME: ${{ secrets.NAME }}
-        USER: ${{ secrets.USER }}
-        PASSWORD: ${{ secrets.PASSWORD }}
-        HOST: ${{ secrets.HOST }}
-        PORT: ${{ secrets.PORT }}
+        NAME: training
+        USER: postgres
+        PASSWORD: 15111983
+        HOST: localhost
+        PORT: 5432
         STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
         CELERY_RESULT_BACKEND: redis://127.0.0.1:6379/0
         CELERY_BROKER_URL: redis://127.0.0.1:6379/0
@@ -80,14 +79,14 @@ jobs:
     - name: Run tests
       env:
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
-        NAME: ${{ secrets.NAME }}
-        USER: ${{ secrets.USER }}
-        PASSWORD: ${{ secrets.PASSWORD }}
-        HOST: ${{ secrets.HOST }}
-        PORT: ${{ secrets.PORT }}
+        NAME: training
+        USER: postgres
+        PASSWORD: 15111983
+        HOST: localhost
+        PORT: 5432
         STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
-        CELERY_RESULT_BACKEND: redis://127.0.0.1:6379/0
-        CELERY_BROKER_URL: redis://127.0.0.1:6379/0
+        CELERY_RESULT_BACKEND: redis://localhost:6379/0
+        CELERY_BROKER_URL: redis://localhost:6379/0
         EMAIL_TO_CONSOLE: ${{ secrets.EMAIL_TO_CONSOLE }}
         EMAIL_BACKEND: ${{ secrets.EMAIL_BACKEND }}
         EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
@@ -119,82 +118,52 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Setup SSH connection and Deploy
-        uses: appleboy/ssh-action@master
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
         with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          port: 22
-          script: |
-            PROJECT_PATH="/home/${{ secrets.SSH_USER }}/projecthome30.1"
-            mkdir -p "$PROJECT_PATH"
-            cd "$PROJECT_PATH"
-            cat << 'EOF' > .env
-            SECRET_KEY="${{ secrets.SECRET_KEY }}"
-            NAME="${{ secrets.NAME }}"
-            USER="${{ secrets.USER }}"
-            PASSWORD="${{ secrets.PASSWORD }}"
-            HOST="${{ secrets.HOST }}"
-            PORT="${{ secrets.PORT }}"
-            
-            EMAIL_HOST="${{ secrets.EMAIL_HOST }}"
-            EMAIL_PORT="${{ secrets.EMAIL_PORT }}"
-            EMAIL_USE_SSL="${{ secrets.EMAIL_USE_SSL }}"
-            EMAIL_USE_TLS="${{ secrets.EMAIL_USE_TLS }}"
-            
-            # Django
-            DEBUG=False
-            # Stripe
-            STRIPE_API_KEY=${{ secrets.STRIPE_API_KEY }}
-            STRIPE_API_VERSION=${{ secrets.STRIPE_API_VERSION }}
-            # Redis
-            REDIS_HOST=${{ secrets.REDIS_HOST }}
-            REDIS_PORT=${{ secrets.REDIS_PORT }}
-            REDIS_DB=${{ secrets.REDIS_DB }}
-            EOF
-            EOF
-            
-            if [ ! -d ".venv" ]; then
-              python3 -m venv venv
-            fi
-            
-            git fetch --all
-            git reset --hard origin/${{ github.ref_name }}
-            
-            sudo apt install python3 python3-pip python3-venv -y
-            cd ..
-            sudo apt install postgresql postgresql-contrib
-            sudo -u postgres psql -c "ALTER USER ${{ secrets.USER }} PASSWORD '${{ secrets.PASSWORD }}';"
-            sudo -u postgres psql -c 'create database ${{ secrets.NAME }};'
-            python3 -m venv ./.venv 
-            . ./venv/bin/activate
-            cd projecthome30.1/  
-            mkdir static
-            pip3 install -r requirements.txt
-            python3 manage.py migrate
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Build and push to Docker Hub
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_HUB_USERNAME }}/hab:${{ github.sha }}
+            ${{ secrets.DOCKER_HUB_USERNAME }}/hab:latest
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+
+      - name: Deploy to server
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+          # Login to DockerHub
+          echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
+
+          # Pull the image
+          docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/hab:${{ github.sha }}
+
+          # Stop and remove existing container
+          docker stop hab || true
+          docker rm hab || true
+
+          # Run new container
+          docker run -d \
+            --name hab \
+            -p 80:8000 \
+            --restart unless-stopped \
+            ${{ secrets.DOCKER_HUB_USERNAME }}/hab:${{ github.sha }}
+
+          docker image prune -f
+          EOF
             
 
-#      - name: Setup SSH connection
-#        uses: appleboy/ssh-action@master
-#        with:
-#          host: ${{ secrets.SERVER_IP }}
-#          username: ${{ secrets.SSH_USER }}
-#          key: ${{ secrets.SSH_KEY }}
-#          port: 22
-#          script: |
-#            set -ex
-#            rsync -avze "ssh -p 22" --delete --exclude='pycache' . ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:${{ secrets.DEPLOY_DIR }}
-#            cd ${{ secrets.DEPLOY_DIR }}
-#            if [ ! -d "venv" ]; then
-#                python3 -m venv venv
-#            fi
-#            source venv/bin/activate && pip install -r requirements.txt
-#            python manage.py migrate
-#            python manage.py collectstatic --noinput
-#            sudo systemctl restart myapp.service || true
 #  deploy:
 #    runs-on: ubuntu-latest
 #    needs: build
@@ -203,35 +172,48 @@ jobs:
 #      - name: Checkout code
 #        uses: actions/checkout@v3
 #
-#      - name: Deploy with rsync via SSH Action
-#        uses: appleboy/ssh-action@v0.1.5
+#      - name: Setup SSH connection and Deploy
+#        uses: appleboy/ssh-action@master
 #        with:
 #          host: ${{ secrets.SERVER_IP }}
 #          username: ${{ secrets.SSH_USER }}
 #          key: ${{ secrets.SSH_KEY }}
 #          port: 22
 #          script: |
-#            rsync -avze "ssh -p 22 -o LogLevel=DEBUG" --exclude 'pycache' . /var/www/html/projecthome30.1/
-#            echo "Deployment completed successfully!"
-#      - name: Build containers
-#        uses: appleboy/ssh-action@v0.1.5
-#        with:
-#          host: ${{ secrets.SERVER_IP }}
-#          username: ${{ secrets.SSH_USER }}
-#          key: ${{ secrets.SSH_KEY }}
-#          port: 22
-#          script: |
-#            cd /var/www/html/projecthome30.1
-#            git pull origin feature_finish
-#            docker compose down
-#            docker compose up -d --build
+#            PROJECT_PATH="/home/${{ secrets.SSH_USER }}/projecthome30.1"
+#            mkdir -p "$PROJECT_PATH"
+#            cd "$PROJECT_PATH"
+#            cat << 'EOF' > .env
+#            SECRET_KEY="${{ secrets.SECRET_KEY }}"
+#            NAME="${{ secrets.NAME }}"
+#            USER="${{ secrets.USER }}"
+#            PASSWORD="${{ secrets.PASSWORD }}"
+#            PORT="${{ secrets.PORT }}"
+#            HOST="${{ secrets.HOST }}"
 #
-#      - name: Set up SSH
-#        uses: appleboy/ssh-action@v0.1.5
-#        with:
-#          ssh-private-key: ${{ secrets.SSH_KEY }}
+#            EMAIL_HOST="${{ secrets.EMAIL_HOST }}"
+#            EMAIL_PORT="${{ secrets.EMAIL_PORT }}"
+#            EMAIL_USE_SSL="${{ secrets.EMAIL_USE_SSL }}"
+#            EMAIL_USE_TLS="${{ secrets.EMAIL_USE_TLS }}"
 #
-#      - name: Copy project files to server
-#        run: |
-#          rsync -avz --exclude '__pycache__' . ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:${{ secrets.DEPLOY_DIR }}
+#            # Django
+#            DEBUG=False
+#            # Stripe
+#            STRIPE_API_KEY=${{ secrets.STRIPE_API_KEY }}
+#            STRIPE_API_VERSION=${{ secrets.STRIPE_API_VERSION }}
+#            # Redis
+#            REDIS_PORT=${{ secrets.REDIS_PORT }}
+#            REDIS_DB=${{ secrets.REDIS_DB }}
+#            EOF
 #
+#            if [ ! -d ".venv" ]; then
+#              python3 -m venv venv
+#            fi
+#
+#            git fetch --all
+#            git reset --hard origin/${{ github.ref_name }}
+#
+#            sudo apt install python3 python3-pip python3-venv -y
+#            sudo docker compose down || true
+#            git pull origin feature1 || git clone -b feature1 git@github.com:${{ github.repository }}.git .
+#            sudo docker compose up -d --build

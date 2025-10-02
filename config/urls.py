@@ -1,7 +1,9 @@
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
+from config import settings
 from training.views import CourseViewSet
 from user.views import UserCreateAPIView, CustomTokenObtainPairView
 from django.urls import re_path
@@ -40,3 +42,5 @@ urlpatterns = [
     ),
     path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
