@@ -120,14 +120,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Login to DockerHub
-        run: |
-          echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
-
-      - name: Build and push Docker image
-        run: |
-          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/hab:${{ github.sha }} .
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/hab:${{ github.sha }}
+      - name: Build and push to GitHub Packages
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/hab:${{ github.sha }}
+            ghcr.io/${{ github.repository }}/hab:latest
+          secrets: |
+            GITHUB_TOKEN=${{ github.token }}
 
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.5.4
@@ -137,11 +139,23 @@ jobs:
       - name: Deploy to server
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-          echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
-          docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/hab:${{ github.sha }}
+          # Login to GitHub Container Registry
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+          # Pull the image
+          docker pull ghcr.io/${{ github.repository }}/hab:${{ github.sha }}
+
+          # Stop and remove existing container
           docker stop hab || true
           docker rm hab || true
-          docker run -d --name hab -p 80:8000 --restart unless-stopped ${{ secrets.DOCKER_HUB_USERNAME }}/hab:${{ github.sha }}
+
+          # Run new container
+          docker run -d \
+            --name hab \
+            -p 80:8000 \
+            --restart unless-stopped \
+            ghcr.io/${{ github.repository }}/hab:${{ github.sha }}
+
           docker image prune -f
           EOF
             
