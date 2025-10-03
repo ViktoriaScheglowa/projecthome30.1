@@ -34,12 +34,10 @@ services:
 
   db:
     image: postgres:16.0
-    env_file:
-      - .env
     environment:
-      - POSTGRES_USER=${USER}
-      - POSTGRES_PASSWORD=${PASSWORD}
-      - POSTGRES_DB=${NAME}
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=15111983
+      - POSTGRES_DB=training
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
