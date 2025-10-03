@@ -16,42 +16,6 @@ DEBUG = False
 ALLOWED_HOSTS = ["*"]
 
 
-def get_database_config():
-    """Гибкая конфигурация БД для разных окружений"""
-    if os.getenv("GITHUB_ACTIONS") or os.getenv("CI"):
-        print("GITHUB_ACTIONS")
-        return {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": os.getenv("NAME", "test_db"),
-            "USER": os.getenv("USER", "postgres"),
-            "PASSWORD": os.getenv("PASSWORD", "postgres"),
-            "HOST": "db",
-            "PORT": os.getenv("PORT", "5432"),
-        }
-    # Если запуск в Docker
-    elif os.getenv("DOCKER_ENV"):
-        print("DOCKER_ENV")
-        return {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": os.getenv("NAME"),
-            "USER": os.getenv("USER"),
-            "PASSWORD": os.getenv("PASSWORD"),
-            "HOST": "db",
-            "PORT": os.getenv("PORT", "5432"),
-        }
-    # Локальная разработка (не в Docker)
-    else:
-        print("не в Docker")
-        return {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": os.getenv("NAME", "local_db"),
-            "USER": os.getenv("USER", "postgres"),
-            "PASSWORD": os.getenv("PASSWORD", "postgres"),
-            "HOST": "db",
-            "PORT": os.getenv("PORT", "5432"),
-        }
-
-
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -119,11 +83,17 @@ REST_FRAMEWORK = {
 }
 
 
-DATABASES = {"default": get_database_config()}
+DATABASES = {"default":
+    {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("NAME", "local_db"),
+        "USER": os.getenv("USER", "postgres"),
+        "PASSWORD": os.getenv("PASSWORD", "postgres"),
+        "HOST": os.getenv("HOST", "db"),
+        "PORT": os.getenv("PORT", "5432"),
+    }
+}
 
-print("-----------DATABASES-----------")
-print(get_database_config())
-print("-------------------------------")
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
