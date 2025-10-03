@@ -183,7 +183,7 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 }
 
-CORS_ALLOWED_ORIGINS = ["*"]
+CORS_ALLOWED_ORIGINS = ["https://*", "http://*"]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://read-and-write.example.com",
