@@ -46,7 +46,7 @@ class User(AbstractUser):
     def avatar_url(self):
         if self.avatar and hasattr(self.avatar, "url"):
             return self.avatar.url
-        return "media/default_avatar.png"
+        return "media/avatars/default_avatar.png"
 
 
 class Pay(models.Model):
