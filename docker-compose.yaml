@@ -8,6 +8,8 @@ services:
       - .:/projecthome30.1
       - static_volume:/projecthome30.1/static
       - media_volume:/projecthome30.1/media
+    environment:
+      - HOST=db
     depends_on:
       - db
       - redis
@@ -60,6 +62,8 @@ services:
     command: celery -A config worker --loglevel=info
     volumes:
       - .:/projecthome30.1
+    environment:
+      - HOST=db
     env_file:
       - .env
     depends_on:
@@ -71,6 +75,8 @@ services:
     command: celery -A config beat --loglevel=info
     volumes:
       - .:/projecthome30.1
+    environment:
+      - HOST=db
     env_file:
       - .env
     depends_on:
