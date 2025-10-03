@@ -63,7 +63,7 @@ jobs:
         NAME: training
         USER: postgres
         PASSWORD: 15111983
-        HOST: localhost
+        HOST: 127.0.0.1
         PORT: 5432
         STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
         CELERY_RESULT_BACKEND: redis://127.0.0.1:6379/0
@@ -82,11 +82,11 @@ jobs:
         NAME: training
         USER: postgres
         PASSWORD: 15111983
-        HOST: localhost
+        HOST: 127.0.0.1
         PORT: 5432
         STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
-        CELERY_RESULT_BACKEND: redis://localhost:6379/0
-        CELERY_BROKER_URL: redis://localhost:6379/0
+        CELERY_RESULT_BACKEND: redis://127.0.0.1:6379/0
+        CELERY_BROKER_URL: redis://127.0.0.1:6379/0
         EMAIL_TO_CONSOLE: ${{ secrets.EMAIL_TO_CONSOLE }}
         EMAIL_BACKEND: ${{ secrets.EMAIL_BACKEND }}
         EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
