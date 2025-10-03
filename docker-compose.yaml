@@ -8,6 +8,8 @@ services:
       - .:/projecthome30.1
       - static_volume:/projecthome30.1/static
       - media_volume:/projecthome30.1/media
+    env_file:
+      - .env
     environment:
       - HOST=db
     depends_on:
@@ -15,8 +17,7 @@ services:
       - redis
     ports:
       - "8000:8000"
-    env_file:
-      - .env
+
 
   nginx:
     image: nginx:stable-alpine
