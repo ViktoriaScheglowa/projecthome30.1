@@ -47,7 +47,7 @@ def get_database_config():
             "NAME": os.getenv("NAME", "local_db"),
             "USER": os.getenv("USER", "postgres"),
             "PASSWORD": os.getenv("PASSWORD", "postgres"),
-            "HOST": os.getenv("HOST", "localhost"),
+            "HOST": os.getenv("HOST", "db"),
             "PORT": os.getenv("PORT", "5432"),
         }
 
