@@ -73,7 +73,7 @@ services:
 
   celery_beat:
     build: .
-    command: celery -A config beat --loglevel=info
+    command: sh -c "echo 'HOST=db' >> .env && celery -A config beat --loglevel=info"
     volumes:
       - .:/projecthome30.1
     environment:
