@@ -127,6 +127,7 @@ jobs:
 
       - name: Set up Venv
         run: | 
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
           PROJECT_PATH="/home/${{ secrets.SSH_USER }}/projecthome30.1"
           mkdir -p "$PROJECT_PATH"
           cd "$PROJECT_PATH"
@@ -135,6 +136,7 @@ jobs:
             python3 -m venv venv
           fi
           sudo apt install python3 python3-pip python3-venv -y
+          EOF
 
       - name: Deploy docker to server
         run: |
