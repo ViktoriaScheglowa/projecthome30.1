@@ -141,7 +141,10 @@ jobs:
       - name: Deploy docker to server
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-
+          PROJECT_PATH="/home/${{ secrets.SSH_USER }}/projecthome30.1"
+          mkdir -p "$PROJECT_PATH"
+          cd "$PROJECT_PATH"
+          
           git fetch --all
           git reset --hard origin/${{ github.ref_name }}
           
